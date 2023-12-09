@@ -16,11 +16,12 @@ Here are some personal notes and house rules I've adopted:
   since it allows me to make use of whatever unused 5 minutes in my day present
   themselves for working on the puzzles.
 
-* Nowadays I'm using the repl.it Android app for writing AOC code on the phone,
-  in the earlier years I relied on Dcoder. I'm thankful that these fine folks
-  help make coding one the phone halfway bearable, but I've still found it to
-  be a struggle in a number of ways. In particular, the apps could be more
-  reliable - I've lost significant work multiple times over the years...
+* I've landed on termux for writing code on my phone. Previously, I've been
+  using the repl.it Android app for writing AOC code on the phone, in the
+  earlier years I had used Dcoder. I'm thankful that these fine folks help make
+  coding one the phone halfway bearable, but I've still found it to be a
+  struggle in a number of ways. In particular, the apps could be more reliable
+  - I've lost significant work multiple times over the years...
   
 * Coding on the phone also forces me to keep things simple, and I consider this
   a plus. Each part of every puzzle gets its own file, and I don't use any
@@ -100,7 +101,7 @@ an interpreter and acts as the oracle for the fate of a robot, which is
 controlled by a program that you create and give to the intcode program!
 Unfortunately, we no longer see these elaborate puzzle mechanics in more recent
 years, apparently due to the desire to keep different days' puzzles independent
-of each other, and a practical limit of much conceptual and practical
+of each other, and a practical limit of how much conceptual and practical
 complexity can go into a single day.
 
 On the other end of the spectrum, the puzzles that I find somewhat unsatisfying
@@ -111,16 +112,16 @@ program to understand what it does at a higher level. The main thing I dislike
 with these is that it is often awkward to write a solution program that
 extracts the hidden structure and works for "arbitrary" inputs. While there are
 different inputs for AoC participants, I do believe the inputs for these days
-are merely parameterized differently, but in theory the there could be entirely
+are merely parameterized differently, but in theory there could be entirely
 different structure hidden in different inputs. Separately, it feels more
 rewarding to me to understand and exploit structure that's inherent to the
-problem, and not just a feature of the particular problem instance on is given.
+problem, and not just a feature of the particular problem instance I'm given.
 
 Finally, one thing that impresses me every year is how diverse the community of
 AoC participants is, as evident by the interaction on the r/adventofcode
-subreddit. I'm not actively engaging, but like to lurk and see how other people
-approach the puzzles, as well as their unique approaches, solutions,
-challenges, etc.
+subreddit. I'm usually not actively engaging, but like to lurk and see how
+other people approach the puzzles, as well as their unique approaches,
+solutions, challenges, etc.
 
 # State of this repository
 
@@ -130,6 +131,5 @@ repository isn't entirely complete. Some days are missing for various reasons
 compiling (some due to Rust version incompatibilities or because I lost the
 actual version of the code that produced the solution). I figured it still
 makes sense to centralize all the AoC code I have in a single repository for
-future reference. Perhaps I will go back and fix up the gaps and issued at some
+future reference. Perhaps I will go back and fix up the gaps and issues at some
 point.
-

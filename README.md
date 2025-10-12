@@ -21,7 +21,7 @@ Here are some personal notes and house rules I've adopted:
   earlier years I had used Dcoder. I'm thankful that these fine folks help make
   coding one the phone halfway bearable, but I've still found it to be a
   struggle in a number of ways. In particular, the apps could be more reliable
-  - I've lost significant work multiple times over the years...
+  as I've lost significant work multiple times over the years...
   
 * Coding on the phone also forces me to keep things simple, and I consider this
   a plus. Each part of every puzzle gets its own file, and I don't use any

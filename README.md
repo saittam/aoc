@@ -63,10 +63,10 @@ Here are some personal notes and house rules I've adopted:
 * I don't go for the leaderboard - not only is it incompatible with my daily
   schedule, but I personally find the most rewarding aspect of AoC is to ponder
   the structure of a problem posed in a puzzle and take the time to think
-  through that instead of rushing to implement a solution. Similarly for coding
-  - when I see multiple approaches, I like to think of their relative benefits
-  before starting to write code. It also happens that I pick an unusual
-  approach to try how the idea might look like in Rust.
+  through that instead of rushing to implement a solution. Similarly for
+  coding: when I see multiple approaches, I like to think of their relative
+  benefits before starting to write code. It also happens that I pick an
+  unusual approach to try how the idea might look like in Rust.
 
 All that said, of course there are cases where I have broken these rules. For
 example, I haven't written an MD5 implementation and instead used a dependency

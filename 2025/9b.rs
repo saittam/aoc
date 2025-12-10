@@ -1,4 +1,7 @@
-use std::{collections::HashSet, io::BufRead};
+use std::{
+  collections::{HashMap, HashSet},
+  io::BufRead,
+};
 
 type Point = (i64, i64);
 
@@ -35,6 +38,10 @@ fn main() {
   // columns with no red tiles as a single item.
   let xrmap = dedup(pos.iter().map(|(x, _)| *x));
   let yrmap = dedup(pos.iter().map(|(_, y)| *y));
+  let w = xrmap.len() as i64;
+  let h = yrmap.len() as i64;
+  let yr = |y| yrmap[y as usize];
+  let xr = |x| xrmap[x as usize];
   let pos = pos
     .iter()
     .map(|(x, y)| {
@@ -57,57 +64,105 @@ fn main() {
     .zip(segment_iter.cycle().skip(1))
     .map(|((sx1, sy1), (sx2, sy2))| sx1 * sy2 - sx2 * sy1)
     .sum::<i64>();
-  println!("winding {winding}");
-  if winding != 4 {
-    panic!("bad loop");
+  if winding.abs() != 4 {
+    panic!("loop has bad winding number {winding}");
   }
 
+  let red = pos.iter().collect::<HashSet<_>>();
+  let red = &red;
+
+  // Compute the set of tiles which are red or green.
+  // First, trace the outline of the loop...
   let mut q = Vec::new();
-  let mut set = pos
+  let mut green = pos
     .iter()
     .copied()
     .zip(pos.iter().copied().cycle().skip(1))
     .fold(
       HashSet::new(),
-      |mut set, ((x1, y1), (x2, y2))| {
+      |mut green, ((x1, y1), (x2, y2))| {
         let (dx, dy) = (x2 - x1, y2 - y1);
-        // TODO winding direction...
-        let (fx, fy) = (-dy.signum(), dx.signum());
+        let (innerx, innery) = (
+          -dy.signum() * winding.signum(),
+          dx.signum() * winding.signum(),
+        );
         for p in rect((x1, y1), (x2, y2)) {
-          if p != (x2, y2) && !set.insert(p) {
+          if p != (x2, y2) && !green.insert(p) {
             panic!("overlap {p:?}");
           }
-          q.push((p.0 + fx, p.1 + fy));
+          q.push((p.0 + innerx, p.1 + innery));
         }
-        set
+        green
       },
     );
 
-  println!("filling");
-
+  // ... then floodfill the interior.
   while let Some((x, y)) = q.pop() {
-    if set.insert((x, y)) {
+    if green.insert((x, y)) {
       q.extend(rect((x - 1, y - 1), (x + 1, y + 1)));
     }
   }
+  let green = &green;
 
-  println!("testing");
+  // Check red-cornered rectangle sizes. Brute force
+  // is possible, but unsatisfying. Instead, precompute
+  // some data to quickly obtain extent of possible
+  // areas given a left corner.
 
+  // End of green stretch in increasing x direction,
+  let greenend = (0..h)
+    .flat_map(|y| {
+      (0..w).rev().scan(None, move |e, x| {
+        let p = (x, y);
+        *e = green.contains(&p).then(|| e.unwrap_or(x));
+        Some((p, *e))
+      })
+    })
+    .filter_map(|(p, e)| e.map(|e| (p, e)))
+    .collect::<HashMap<_, _>>();
+  let greenend = &greenend;
+
+  // Next red tile position in decreasing x direction.
+  let leftred = (0..h)
+    .flat_map(|y| {
+      (0..w).scan(None, move |lr, x| {
+        let p = (x, y);
+        *lr = red.contains(&p).then(|| x).or(*lr);
+        Some((p, *lr))
+      })
+    })
+    .filter(|(p, _)| green.contains(&p))
+    .collect::<HashMap<_, _>>();
+  let leftred = &leftred;
+
+  // For each red tile, compute largest area with the red
+  // tile on a left corner.
   let n = pos
     .iter()
-    .enumerate()
-    .flat_map(|(i, p1)| {
-      pos.iter().skip(i + 1).map(move |p2| (p1, p2))
-    })
-    .filter(|(p1, p2)| {
-      rect(**p1, **p2).all(|p| set.contains(&p))
-    })
-    .map(|((x1, y1), (x2, y2))| {
-      ((xrmap[*x1 as usize] - xrmap[*x2 as usize]).abs()
-        + 1)
-        * ((yrmap[*y1 as usize] - yrmap[*y2 as usize])
-          .abs()
-          + 1)
+    .copied()
+    .flat_map(|(x1, y1)| {
+      // search in both y directions
+      [1, -1].iter().flat_map(move |step| {
+        std::iter::successors(Some(y1), move |p| {
+          Some(p + step)
+        })
+        .take_while(move |y2| green.contains(&(x1, *y2)))
+        // track max width in positive x direction
+        .scan(greenend[&(x1, y1)], move |e, y2| {
+          *e = i64::min(greenend[&(x1, y2)], *e);
+          Some(
+            leftred[&(*e, y2)]
+              .filter(|x2| *x2 >= x1)
+              .map(|x2| (x2, y2)),
+          )
+        })
+        .filter_map(|p| p)
+        // compute area size using reverse transformation
+        .map(move |(x2, y2)| {
+          ((xr(x1) - xr(x2)).abs() + 1)
+            * ((yr(y1) - yr(y2)).abs() + 1)
+        })
+      })
     })
     .max()
     .expect("max");
